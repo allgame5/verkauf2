@@ -28,7 +28,7 @@ function save(items: Item[]) { if (!browser) return; localStorage.setItem('pos_i
 
 const items = $state<Item[]>(load());
 const categories = $derived(Array.from(new Set(items.map(i => i.category))).sort());
-const byCategory = $derived(() => {
+const byCategory = $derived.by(() => {
   const map: Record<string, Item[]> = {};
   for (const item of items) { (map[item.category] ??= []).push(item); }
   return map;
