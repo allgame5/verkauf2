@@ -1,4 +1,4 @@
-import { browser } from '$app/environment';
+const browser = typeof window !== 'undefined';
 
 interface Settings {
   currency: string;
@@ -41,17 +41,15 @@ export const settingsStore = {
   toggleDark() {
     settings.darkMode = !settings.darkMode;
     save(settings);
-    document.documentElement.classList.toggle('dark', settings.darkMode);
+    if (browser) document.documentElement.classList.toggle('dark', settings.darkMode);
   },
   initDark() {
-    if (browser) {
-      document.documentElement.classList.toggle('dark', settings.darkMode);
-    }
+    if (browser) document.documentElement.classList.toggle('dark', settings.darkMode);
   },
   update(partial: Partial<Settings>) {
     Object.assign(settings, partial);
     save(settings);
-    if (partial.darkMode !== undefined) {
+    if (partial.darkMode !== undefined && browser) {
       document.documentElement.classList.toggle('dark', settings.darkMode);
     }
   }

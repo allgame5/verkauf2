@@ -1,4 +1,4 @@
-import { browser } from '$app/environment';
+const browser = typeof window !== 'undefined';
 
 export interface Item {
   id: string;
@@ -41,9 +41,7 @@ export const itemsStore = {
   get all() { return items; },
   get byCategory() {
     const map: Record<string, Item[]> = {};
-    for (const item of items) {
-      (map[item.category] ??= []).push(item);
-    }
+    for (const item of items) { (map[item.category] ??= []).push(item); }
     return map;
   },
   get categories() { return categories; },
@@ -54,16 +52,10 @@ export const itemsStore = {
   },
   remove(id: string) {
     const idx = items.findIndex(i => i.id === id);
-    if (idx >= 0) {
-      items.splice(idx, 1);
-      save(items);
-    }
+    if (idx >= 0) { items.splice(idx, 1); save(items); }
   },
   update(id: string, data: Partial<Item>) {
     const idx = items.findIndex(i => i.id === id);
-    if (idx >= 0) {
-      items[idx] = { ...items[idx], ...data };
-      save(items);
-    }
+    if (idx >= 0) { items[idx] = { ...items[idx], ...data }; save(items); }
   }
 };

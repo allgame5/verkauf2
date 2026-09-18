@@ -1,5 +1,4 @@
-import { browser } from '$app/environment';
-import type { Item } from './items.svelte';
+const browser = typeof window !== 'undefined';
 
 export interface CartItem {
   id: string;
@@ -37,31 +36,19 @@ export const cartStore = {
   get tax() { return tax; },
   get total() { return total; },
   get count() { return count; },
-  add(item: Item, qty = 1) {
+  add(item: { id: string; name: string; price: number }, qty = 1) {
     const existing = cart.find(c => c.itemId === item.id);
-    if (existing) {
-      existing.quantity += qty;
-    } else {
-      cart.push({ id: crypto.randomUUID(), itemId: item.id, name: item.name, price: item.price, quantity: qty });
-    }
+    if (existing) { existing.quantity += qty; }
+    else { cart.push({ id: crypto.randomUUID(), itemId: item.id, name: item.name, price: item.price, quantity: qty }); }
     save(cart);
   },
   remove(id: string) {
     const idx = cart.findIndex(c => c.id === id);
-    if (idx >= 0) {
-      cart.splice(idx, 1);
-      save(cart);
-    }
+    if (idx >= 0) { cart.splice(idx, 1); save(cart); }
   },
   setQty(id: string, qty: number) {
     const item = cart.find(c => c.id === id);
-    if (item) {
-      item.quantity = Math.max(1, qty);
-      save(cart);
-    }
+    if (item) { item.quantity = Math.max(1, qty); save(cart); }
   },
-  clear() {
-    cart.length = 0;
-    save(cart);
-  }
+  clear() { cart.length = 0; save(cart); }
 };

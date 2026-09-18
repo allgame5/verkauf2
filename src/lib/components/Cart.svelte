@@ -1,20 +1,18 @@
 <script>
   import Button from './ui/Button.svelte';
+  import Input from './ui/Input.svelte';
   import Modal from './ui/Modal.svelte';
   import { cartStore } from '../stores/cart.svelte';
   import { settingsStore } from '../stores/settings.svelte';
 
   let showCheckout = $state(false);
-  let paymentMethod = $state<'cash' | 'card'>('cash');
+  let paymentMethod = $state('cash');
   let cashReceived = $state('');
   let change = $derived(paymentMethod === 'cash' ? Math.max(0, parseFloat(cashReceived) - cartStore.total) : 0);
 
-  function formatCurrency(amount: number) {
-    return new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(amount);
-  }
+  const formatCurrency = (amount) => new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(amount);
 
   function checkout() {
-    // In a real app, this would send to a backend
     cartStore.clear();
     showCheckout = false;
     cashReceived = '';
@@ -61,19 +59,9 @@
     </ul>
 
     <div class="border-t border-gray-200 pt-4 dark:border-gray-800 space-y-2">
-      <div class="flex justify-between text-sm">
-        <span class="text-gray-600 dark:text-gray-400">Zwischensumme</span>
-        <span class="font-medium">{formatCurrency(cartStore.subtotal)}</span>
-      </div>
-      <div class="flex justify-between text-sm">
-        <span class="text-gray-600 dark:text-gray-400">MwSt ({settingsStore.taxRate}%)</span>
-        <span class="font-medium">{formatCurrency(cartStore.tax)}</span>
-      </div>
-      <div class="flex justify-between text-lg font-semibold border-t border-gray-200 pt-2 dark:border-gray-800">
-        <span>Gesamt</span>
-        <span>{formatCurrency(cartStore.total)}</span>
-      </div>
-
+      <div class="flex justify-between text-sm"><span class="text-gray-600 dark:text-gray-400">Zwischensumme</span><span class="font-medium">{formatCurrency(cartStore.subtotal)}</span></div>
+      <div class="flex justify-between text-sm"><span class="text-gray-600 dark:text-gray-400">MwSt ({settingsStore.taxRate}%)</span><span class="font-medium">{formatCurrency(cartStore.tax)}</span></div>
+      <div class="flex justify-between text-lg font-semibold border-t border-gray-200 pt-2 dark:border-gray-800"><span>Gesamt</span><span>{formatCurrency(cartStore.total)}</span></div>
       <Button variant="success" class="w-full mt-4" onclick={() => showCheckout = true}>Zur Kasse</Button>
     </div>
   {/if}
@@ -81,25 +69,16 @@
 
 <Modal bind:open={showCheckout} title="Bezahlen">
   <div class="space-y-4">
-    <div>
-      <label class="block text-sm font-medium mb-2">Zahlungsart</label>
+    <div><label class="block text-sm font-medium mb-2">Zahlungsart</label>
       <div class="flex gap-2">
         <Button variant={paymentMethod === 'cash' ? 'primary' : 'secondary'} class="flex-1" onclick={() => paymentMethod = 'cash'}>Bar</Button>
         <Button variant={paymentMethod === 'card' ? 'primary' : 'secondary'} class="flex-1" onclick={() => paymentMethod = 'card'}>Karte</Button>
       </div>
     </div>
-
     {#if paymentMethod === 'cash'}
       <Input label="Erhalten" type="number" step="0.01" bind:value={cashReceived} placeholder="0.00" />
-      <div class="flex justify-between text-lg font-semibold">
-        <span>Rückgeld</span>
-        <span class="text-green-600">{formatCurrency(change)}</span>
-      </div>
+      <div class="flex justify-between text-lg font-semibold"><span>Rückgeld</span><span class="text-green-600">{formatCurrency(change)}</span></div>
     {/if}
-
-    <div class="flex gap-2 pt-2">
-      <Button variant="secondary" class="flex-1" onclick={() => showCheckout = false}>Abbrechen</Button>
-      <Button variant="success" class="flex-1" onclick={checkout} disabled={paymentMethod === 'cash' && change < 0}>Abschließen</Button>
-    </div>
+    <div class="flex gap-2 pt-2"><Button variant="secondary" class="flex-1" onclick={() => showCheckout = false}>Abbrechen</Button><Button variant="success" class="flex-1" onclick={checkout} disabled={paymentMethod === 'cash' && change < 0}>Abschließen</Button></div>
   </div>
 </Modal>

@@ -3,9 +3,7 @@
   import { settingsStore } from '../stores/settings.svelte';
   import { cartStore } from '../stores/cart.svelte';
 
-  function formatCurrency(amount: number) {
-    return new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(amount);
-  }
+  const formatCurrency = (amount) => new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(amount);
 </script>
 
 <header class="sticky top-0 z-40 flex items-center justify-between gap-4 border-b border-gray-200 bg-white/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-white/80 dark:border-gray-800 dark:bg-gray-900/95 dark:supports-[backdrop-filter]:bg-gray-900/80">

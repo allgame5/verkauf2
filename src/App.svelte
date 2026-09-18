@@ -5,9 +5,9 @@
   import Toast from './lib/components/ui/Toast.svelte';
   import { settingsStore } from './lib/stores/settings.svelte';
 
-  let toasts = $state<Array<{id: string, type: 'success' | 'error' | 'info' | 'warning', message: string}>>([]);
+  let toasts = $state([]);
 
-  function showToast(type: 'success' | 'error' | 'info' | 'warning', message: string) {
+  function showToast(type, message) {
     const id = crypto.randomUUID();
     toasts.push({ id, type, message });
     setTimeout(() => { toasts = toasts.filter(t => t.id !== id); }, 3000);
