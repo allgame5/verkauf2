@@ -26,7 +26,7 @@
     <Cart />
   </main>
 
-  <div class="fixed bottom-4 right-4 z-50 flex flex-col gap-2">
+  <div class="fixed bottom-4 right-4 left-4 lg:left-auto lg:bottom-4 z-50 flex flex-col gap-2 lg:max-w-xs">
     {#each toasts as toast}
       <Toast type={toast.type} message={toast.message} onClose={() => toasts = toasts.filter(t => t.id !== toast.id)} />
     {/each}

@@ -21,41 +21,24 @@ const DEFAULT_ITEMS: Item[] = [
 
 function load(): Item[] {
   if (!browser) return DEFAULT_ITEMS;
-  try {
-    const data = localStorage.getItem('pos_items');
-    return data ? JSON.parse(data) : DEFAULT_ITEMS;
-  } catch {
-    return DEFAULT_ITEMS;
-  }
+  try { const data = localStorage.getItem('pos_items'); return data ? JSON.parse(data) : DEFAULT_ITEMS; } catch { return DEFAULT_ITEMS; }
 }
 
-function save(items: Item[]) {
-  if (!browser) return;
-  localStorage.setItem('pos_items', JSON.stringify(items));
-}
+function save(items: Item[]) { if (!browser) return; localStorage.setItem('pos_items', JSON.stringify(items)); }
 
 const items = $state<Item[]>(load());
 const categories = $derived(Array.from(new Set(items.map(i => i.category))).sort());
+const byCategory = $derived(() => {
+  const map: Record<string, Item[]> = {};
+  for (const item of items) { (map[item.category] ??= []).push(item); }
+  return map;
+});
 
 export const itemsStore = {
   get all() { return items; },
-  get byCategory() {
-    const map: Record<string, Item[]> = {};
-    for (const item of items) { (map[item.category] ??= []).push(item); }
-    return map;
-  },
   get categories() { return categories; },
-  add(item: Omit<Item, 'id'>) {
-    const newItem = { ...item, id: crypto.randomUUID() };
-    items.push(newItem);
-    save(items);
-  },
-  remove(id: string) {
-    const idx = items.findIndex(i => i.id === id);
-    if (idx >= 0) { items.splice(idx, 1); save(items); }
-  },
-  update(id: string, data: Partial<Item>) {
-    const idx = items.findIndex(i => i.id === id);
-    if (idx >= 0) { items[idx] = { ...items[idx], ...data }; save(items); }
-  }
+  get byCategory() { return byCategory; },
+  add(item: Omit<Item, 'id'>) { const newItem = { ...item, id: crypto.randomUUID() }; items.push(newItem); save(items); },
+  remove(id: string) { const idx = items.findIndex(i => i.id === id); if (idx >= 0) { items.splice(idx, 1); save(items); } },
+  update(id: string, data: Partial<Item>) { const idx = items.findIndex(i => i.id === id); if (idx >= 0) { items[idx] = { ...items[idx], ...data }; save(items); } }
 };
